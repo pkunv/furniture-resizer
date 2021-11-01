@@ -1,46 +1,67 @@
 import "./style.css";
-import * as THREE from "three";
-import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
-import { DragControls } from "three/examples/jsm/controls/DragControls.js";
+import { createTable } from "./furnitures/table";
+import { createChair } from "./furnitures/chair";
+import * as init from "./init";
 
-let camera, scene, renderer;
-let mesh;
+let scene = init.Scene();
+let renderer = init.Renderer(document.getElementById("threeCanvas"));
+let camera = init.Camera(renderer);
 var objects = [];
-init();
-animate();
 
-function init() {
-  camera = new THREE.PerspectiveCamera(
-    70,
-    window.innerWidth / window.innerHeight,
-    1,
-    1000
-  );
-  camera.position.z = 800;
+let tableGeometryDims = [
+  [1.5, 0.1, 1], // tabletop
+  [0.1, 0.5, 0.1], // legs
+];
 
-  scene = new THREE.Scene();
-
-  const texture = new THREE.TextureLoader().load(
-    "https://i.imgur.com/xLJVKyJ.jpeg"
-  );
-
-  const geometry = new THREE.BoxGeometry(600, 50, 300);
-  const material = new THREE.MeshBasicMaterial({ map: texture });
-  var canvas = document.getElementById("threeCanvas");
-  mesh = new THREE.Mesh(geometry, material);
-  scene.add(mesh);
-  objects.push(mesh);
-  renderer = new THREE.WebGLRenderer({
-    antialias: true,
-    alpha: true,
-    canvas: canvas,
-  });
-  renderer.setPixelRatio(window.devicePixelRatio);
-  renderer.setSize(window.innerWidth / 2, window.innerHeight / 2);
-  document.body.appendChild(renderer.domElement);
-
-  //
-  const orbitControls = new OrbitControls(camera, renderer.domElement);
+function initTableDOM() {
+  var nodes = document.getElementsByTagName("input");
+  for (var i = 0, len = nodes.length; i != len; ++i) {
+    nodes[0].parentNode.removeChild(nodes[0]);
+  }
+  for (var i = 0; i < 3; i++) {
+    switch (i) {
+      case 0:
+        var label = "Dimension X for tabletop";
+        break;
+      case 1:
+        var label = "Dimension Y for tabletop";
+        break;
+      case 2:
+        var label = "Dimension Z for tabletop";
+        break;
+    }
+    var input = document.createElement("input");
+    input.placeholder = label;
+    input.type = "number";
+    input.className = "tableDimSet dimSet";
+    input.id = "pos" + i;
+    document.body.appendChild(input);
+  }
+}
+function initChairDOM() {
+  var nodes = document.getElementsByTagName("input");
+  for (var i = 0, len = nodes.length; i != len; ++i) {
+    nodes[0].parentNode.removeChild(nodes[0]);
+  }
+  for (var i = 0; i < 3; i++) {
+    switch (i) {
+      case 0:
+        var label = "Dimension X for chair";
+        break;
+      case 1:
+        var label = "Dimension Y for chair";
+        break;
+      case 2:
+        var label = "Dimension Z for chair";
+        break;
+    }
+    var input = document.createElement("input");
+    input.placeholder = label;
+    input.type = "number";
+    input.className = "chairDimSet dimSet";
+    input.id = "pos" + i;
+    document.body.appendChild(input);
+  }
 }
 
 function onWindowResize() {
@@ -55,3 +76,22 @@ function animate() {
   onWindowResize();
   renderer.render(scene, camera);
 }
+
+function updateMesh() {
+  scene.remove(scene.children[0]);
+  var furniture = document.getElementById("furnitureSelect").value;
+  if (furniture == "table") {
+    initTableDOM();
+    createTable(scene, objects, tableGeometryDims);
+  }
+  if (furniture == "chair") {
+    initChairDOM();
+    createChair(scene, objects);
+  }
+}
+
+window.onload = function () {
+  updateMesh();
+  document.getElementById("furnitureSelect").addEventListener("change", updateMesh);
+  animate();
+};

@@ -10,6 +10,27 @@ body {
   font-family: "Helvetica";
   background-color: #f7f7f7;
 }
+input,
+select {
+  outline: 0;
+  border: 0;
+  box-shadow: 0 5px 10px -5px rgba(0, 0, 0, 0.3);
+}
+.dimSet {
+  margin: 8px;
+  border-radius: 5px;
+  border: 0;
+}
+.dimSet:focus {
+  outline: 0;
+}
+#furnitureSelect {
+  margin: 16px;
+  border-radius: 5px;
+}
+#furnitureSelect:focus {
+  outline: 0;
+}
 #threeCanvas {
   outline: 5px solid black;
   box-shadow: 0 5px 10px -5px rgba(0, 0, 0, 0.3);
